@@ -18,6 +18,8 @@ from .core.const import (
     BAUD_RATES,
     COMPONENTS,
     CONF_BAUDRATE,
+    CONF_CONSIDER_UNAVAILABLE_BATTERY,
+    CONF_CONSIDER_UNAVAILABLE_MAINS,
     CONF_DATABASE,
     CONF_DEVICE_CONFIG,
     CONF_ENABLE_QUIRKS,
@@ -29,6 +31,8 @@ from .core.const import (
     DATA_ZHA_DISPATCHERS,
     DATA_ZHA_GATEWAY,
     DATA_ZHA_PLATFORM_LOADED,
+    DEFAULT_CONSIDER_UNAVAILABLE_BATTERY,
+    DEFAULT_CONSIDER_UNAVAILABLE_MAINS,
     DOMAIN,
     SIGNAL_ADD_ENTITIES,
     RadioType,
@@ -46,6 +50,12 @@ ZHA_CONFIG_SCHEMA = {
     vol.Optional(CONF_ZIGPY): dict,
     vol.Optional(CONF_RADIO_TYPE): cv.enum(RadioType),
     vol.Optional(CONF_USB_PATH): cv.string,
+    vol.Optional(
+        CONF_CONSIDER_UNAVAILABLE_MAINS, default=DEFAULT_CONSIDER_UNAVAILABLE_MAINS
+    ): cv.positive_int,
+    vol.Optional(
+        CONF_CONSIDER_UNAVAILABLE_BATTERY, default=DEFAULT_CONSIDER_UNAVAILABLE_BATTERY
+    ): cv.positive_int,
 }
 CONFIG_SCHEMA = vol.Schema(
     {

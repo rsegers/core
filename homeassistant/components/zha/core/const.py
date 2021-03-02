@@ -126,6 +126,15 @@ CONF_RADIO_TYPE = "radio_type"
 CONF_USB_PATH = "usb_path"
 CONF_ZIGPY = "zigpy_config"
 
+CONF_CONSIDER_UNAVAILABLE_MAINS, DEFAULT_CONSIDER_UNAVAILABLE_MAINS = (
+    "consider_unavailable_mains",
+    (60 * 60 * 2),  # 2 hours
+)
+CONF_CONSIDER_UNAVAILABLE_BATTERY, DEFAULT_CONSIDER_UNAVAILABLE_BATTERY = (
+    "consider_unavailable_battery",
+    (60 * 60 * 6),  # 6 hours
+)
+
 DATA_DEVICE_CONFIG = "zha_device_config"
 DATA_ZHA = "zha"
 DATA_ZHA_CONFIG = "config"

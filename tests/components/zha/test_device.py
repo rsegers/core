@@ -8,7 +8,7 @@ import pytest
 import zigpy.profiles.zha
 import zigpy.zcl.clusters.general as general
 
-import homeassistant.components.zha.core.device as zha_core_device
+import homeassistant.components.zha.core.const as zha_const
 from homeassistant.const import STATE_OFF, STATE_UNAVAILABLE
 import homeassistant.helpers.device_registry as ha_dev_reg
 import homeassistant.util.dt as dt_util
@@ -117,13 +117,13 @@ async def test_check_available_success(
     basic_ch.read_attributes.reset_mock()
     device_with_basic_channel.last_seen = None
     assert zha_device.available is True
-    _send_time_changed(hass, zha_core_device.CONSIDER_UNAVAILABLE_MAINS + 2)
+    _send_time_changed(hass, zha_device._consider_unavailable_time + 2)
     await hass.async_block_till_done()
     assert zha_device.available is False
     assert basic_ch.read_attributes.await_count == 0
 
     device_with_basic_channel.last_seen = (
-        time.time() - zha_core_device.CONSIDER_UNAVAILABLE_MAINS - 2
+        time.time() - zha_device._consider_unavailable_time - 2
     )
     _seens = [time.time(), device_with_basic_channel.last_seen]
 
@@ -172,7 +172,7 @@ async def test_check_available_unsuccessful(
     assert basic_ch.read_attributes.await_count == 0
 
     device_with_basic_channel.last_seen = (
-        time.time() - zha_core_device.CONSIDER_UNAVAILABLE_MAINS - 2
+        time.time() - zha_device._consider_unavailable_time - 2
     )
 
     # unsuccessfuly ping zigpy device, but zha_device is still available
@@ -213,7 +213,7 @@ async def test_check_available_no_basic_channel(
     assert zha_device.available is True
 
     device_without_basic_channel.last_seen = (
-        time.time() - zha_core_device.CONSIDER_UNAVAILABLE_BATTERY - 2
+        time.time() - zha_device._consider_unavailable_time - 2
     )
 
     assert "does not have a mandatory basic cluster" not in caplog.text
@@ -246,38 +246,38 @@ async def test_ota_sw_version(hass, ota_zha_device):
         ("zigpy_device", 0, True),
         (
             "zigpy_device",
-            zha_core_device.CONSIDER_UNAVAILABLE_MAINS + 2,
+            zha_const.DEFAULT_CONSIDER_UNAVAILABLE_MAINS + 2,
             True,
         ),
         (
             "zigpy_device",
-            zha_core_device.CONSIDER_UNAVAILABLE_BATTERY - 2,
+            zha_const.DEFAULT_CONSIDER_UNAVAILABLE_BATTERY - 2,
             True,
         ),
         (
             "zigpy_device",
-            zha_core_device.CONSIDER_UNAVAILABLE_BATTERY + 2,
+            zha_const.DEFAULT_CONSIDER_UNAVAILABLE_BATTERY + 2,
             False,
         ),
         ("zigpy_device_mains", 0, True),
         (
             "zigpy_device_mains",
-            zha_core_device.CONSIDER_UNAVAILABLE_MAINS - 2,
+            zha_const.DEFAULT_CONSIDER_UNAVAILABLE_MAINS - 2,
             True,
         ),
         (
             "zigpy_device_mains",
-            zha_core_device.CONSIDER_UNAVAILABLE_MAINS + 2,
+            zha_const.DEFAULT_CONSIDER_UNAVAILABLE_MAINS + 2,
             False,
         ),
         (
             "zigpy_device_mains",
-            zha_core_device.CONSIDER_UNAVAILABLE_BATTERY - 2,
+            zha_const.DEFAULT_CONSIDER_UNAVAILABLE_BATTERY - 2,
             False,
         ),
         (
             "zigpy_device_mains",
-            zha_core_device.CONSIDER_UNAVAILABLE_BATTERY + 2,
+            zha_const.DEFAULT_CONSIDER_UNAVAILABLE_BATTERY + 2,
             False,
         ),
     ),

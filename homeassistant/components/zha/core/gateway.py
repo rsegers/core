@@ -37,6 +37,8 @@ from .const import (
     ATTR_NWK,
     ATTR_SIGNATURE,
     ATTR_TYPE,
+    CONF_CONSIDER_UNAVAILABLE_BATTERY,
+    CONF_CONSIDER_UNAVAILABLE_MAINS,
     CONF_DATABASE,
     CONF_RADIO_TYPE,
     CONF_ZIGPY,
@@ -54,6 +56,8 @@ from .const import (
     DEBUG_LEVEL_ORIGINAL,
     DEBUG_LEVELS,
     DEBUG_RELAY_LOGGERS,
+    DEFAULT_CONSIDER_UNAVAILABLE_BATTERY,
+    DEFAULT_CONSIDER_UNAVAILABLE_MAINS,
     DEFAULT_DATABASE_NAME,
     DEVICE_PAIRING_STATUS,
     DOMAIN,
@@ -77,12 +81,7 @@ from .const import (
     ZHA_GW_MSG_RAW_INIT,
     RadioType,
 )
-from .device import (
-    CONSIDER_UNAVAILABLE_BATTERY,
-    CONSIDER_UNAVAILABLE_MAINS,
-    DeviceStatus,
-    ZHADevice,
-)
+from .device import DeviceStatus, ZHADevice
 from .group import GroupMember, ZHAGroup
 from .registries import GROUP_ENTITY_DOMAINS
 from .store import async_get_registry
@@ -185,10 +184,17 @@ class ZHAGateway:
             delta_msg = "not known"
             if zha_dev_entry and zha_dev_entry.last_seen is not None:
                 delta = round(time.time() - zha_dev_entry.last_seen)
+                consider_unavailable_mains = self._config.get(
+                    CONF_CONSIDER_UNAVAILABLE_MAINS, DEFAULT_CONSIDER_UNAVAILABLE_MAINS
+                )
+                consider_unavailable_battery = self._config.get(
+                    CONF_CONSIDER_UNAVAILABLE_BATTERY,
+                    DEFAULT_CONSIDER_UNAVAILABLE_BATTERY,
+                )
                 if zha_device.is_mains_powered:
-                    zha_device.available = delta < CONSIDER_UNAVAILABLE_MAINS
+                    zha_device.available = delta < consider_unavailable_mains
                 else:
-                    zha_device.available = delta < CONSIDER_UNAVAILABLE_BATTERY
+                    zha_device.available = delta < consider_unavailable_battery
                 delta_msg = f"{str(timedelta(seconds=delta))} ago"
             _LOGGER.debug(
                 "[%s](%s) restored as '%s', last seen: %s",
